@@ -2,21 +2,23 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from .models import Complaint
 from .serializers import ComplaintSerializer
-from rest_framework.permissions import IsAuthenticated
-from django.db.models import Avg, Count
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
+from django.db.models import Avg, Count, F, ExpressionWrapper, DurationField
 from datetime import timedelta
 from django.utils.timezone import now
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAdminUser
 
 class ComplaintListCreateView(generics.ListCreateAPIView):
     queryset = Complaint.objects.all()
     serializer_class = ComplaintSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
+        if self.request.user.is_authenticated:
+            serializer.save(created_by=self.request.user)
+        else:
+            serializer.save()  # Permitir quejas anónimas
 
 class ComplaintRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Complaint.objects.all()
@@ -55,6 +57,7 @@ class DashboardView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        # Verificar que el usuario pertenece al grupo 'admin'
         if not request.user.groups.filter(name='admin').exists():
             return Response({'error': 'Permiso denegado. Solo para administradores.'}, status=403)
 
@@ -65,9 +68,12 @@ class DashboardView(APIView):
         complaints_by_status = Complaint.objects.values('status').annotate(count=Count('id'))
 
         # Tiempo promedio de resolución de quejas resueltas
-        avg_resolution_time = Complaint.objects.filter(status='resolved').aggregate(
-            avg_time=Avg(timedelta.total_seconds(now() - Complaint.created_at))
-        )
+        avg_resolution_time = Complaint.objects.filter(status='resolved').annotate(
+            resolution_time=ExpressionWrapper(
+                now() - F('created_at'),
+                output_field=DurationField()
+            )
+        ).aggregate(avg_time=Avg('resolution_time'))
 
         # Total de agentes y su carga actual
         agents = Complaint.objects.filter(assigned_to__groups__name='agent').values('assigned_to__username').annotate(
@@ -77,6 +83,6 @@ class DashboardView(APIView):
         return Response({
             'total_complaints': total_complaints,
             'complaints_by_status': complaints_by_status,
-            'avg_resolution_time': avg_resolution_time['avg_time'],
+            'avg_resolution_time': avg_resolution_time['avg_time'].total_seconds() if avg_resolution_time['avg_time'] else None,
             'agents_load': agents
         })

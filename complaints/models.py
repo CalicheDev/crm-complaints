@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -10,7 +11,12 @@ class Complaint(models.Model):
         ('resolved', 'Resolved'),
     ], default='pending')
     assigned_to = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='assigned_complaints')
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_complaints')
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,  # Permitir valores nulos
+        blank=True  # Opcional en formularios
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
