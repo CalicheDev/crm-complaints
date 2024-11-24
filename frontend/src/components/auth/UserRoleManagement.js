@@ -7,37 +7,67 @@ const UserRoleManagement = () => {
   const [selectedRole, setSelectedRole] = useState({});
   const [error, setError] = useState("");
 
+  const handleLogout = () => {
+    localStorage.removeItem("access"); // Elimina el token de acceso
+    localStorage.removeItem("refresh"); // Si tienes un token de refresco
+    window.location.href = "/"; // Redirige al usuario al login
+  };
+
   const fetchUsers = async () => {
+    const token = localStorage.getItem("access"); // Recupera el token desde localStorage
+    if (!token) {
+      alert("No tienes un token válido, por favor inicia sesión nuevamente.");
+      handleLogout();
+      return;
+    }
+
     try {
       const response = await axios.get("http://127.0.0.1:8000/api/auth/users/", {
         headers: {
-          Authorization: `Token ${localStorage.getItem("authToken")}`,
+          Authorization: `Token ${token}`, // Usamos el mismo esquema de autorización
         },
       });
       setUsers(response.data.users);
       setLoading(false);
     } catch (err) {
       console.error("Error fetching users:", err);
-      setError("No se pudo cargar la lista de usuarios.");
+      if (err.response && err.response.status === 401) {
+        alert("Token inválido o expirado. Por favor, inicia sesión de nuevo.");
+        handleLogout(); // Elimina el token y redirige al login
+      } else {
+        setError("No se pudo cargar la lista de usuarios.");
+      }
     }
   };
 
   const updateRole = async (userId) => {
+    const token = localStorage.getItem("access");
+    if (!token) {
+      alert("No tienes un token válido, por favor inicia sesión nuevamente.");
+      handleLogout();
+      return;
+    }
+
     try {
       const response = await axios.post(
         `http://127.0.0.1:8000/api/auth/users/${userId}/update-role/`,
         { role: selectedRole[userId] },
         {
           headers: {
-            Authorization: `Token ${localStorage.getItem("authToken")}`,
+            Authorization: `Token ${token}`,
           },
         }
       );
       alert(response.data.message);
-      fetchUsers(); // Refresh user list
+      fetchUsers(); // Actualiza la lista de usuarios
     } catch (err) {
       console.error("Error updating role:", err);
-      alert("No se pudo actualizar el rol.");
+      if (err.response && err.response.status === 401) {
+        alert("Token inválido o expirado. Por favor, inicia sesión de nuevo.");
+        handleLogout();
+      } else {
+        alert("No se pudo actualizar el rol.");
+      }
     }
   };
 
