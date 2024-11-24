@@ -109,3 +109,36 @@ class UpdateUserRoleView(APIView):
             return Response({'error': 'Usuario no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
         except Group.DoesNotExist:
             return Response({'error': 'Grupo no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+
+class UserProfileView(APIView):
+    """
+    Endpoint para ver y editar el perfil del usuario autenticado.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        # Retorna la información del usuario autenticado
+        user = request.user
+        return Response({
+            "username": user.username,
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+        })
+
+    def put(self, request):
+        # Actualiza la información del usuario autenticado
+        user = request.user
+        data = request.data
+
+        user.first_name = data.get("first_name", user.first_name)
+        user.last_name = data.get("last_name", user.last_name)
+        user.email = data.get("email", user.email)
+
+        # Actualizar contraseña solo si se proporciona
+        password = data.get("password")
+        if password:
+            user.set_password(password)
+
+        user.save()
+        return Response({"message": "Perfil actualizado correctamente."}, status=status.HTTP_200_OK)

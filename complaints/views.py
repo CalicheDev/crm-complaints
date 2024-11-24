@@ -1,4 +1,5 @@
 from rest_framework import generics
+from rest_framework.generics import RetrieveAPIView
 from rest_framework.views import APIView
 from .models import Complaint
 from .serializers import ComplaintSerializer
@@ -31,7 +32,7 @@ class ComplaintAssignAgentView(APIView):
     Endpoint para asignar agentes a quejas.
     Solo los administradores pueden realizar esta acción.
     """
-    permission_classes = [IsAdminUser]
+    permission_classes = [AllowAny]
 
     def post(self, request, pk):
         try:
@@ -48,6 +49,7 @@ class ComplaintAssignAgentView(APIView):
             return Response({'error': 'Queja no encontrada.'}, status=status.HTTP_404_NOT_FOUND)
         except User.DoesNotExist:
             return Response({'error': 'Agente no encontrado o no tiene el rol correcto.'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class DashboardView(APIView):
     """
