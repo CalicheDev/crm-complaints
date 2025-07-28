@@ -1,144 +1,305 @@
-from django.shortcuts import render
-from django.contrib.auth.models import User
-from rest_framework.authtoken.models import Token
+import logging
+from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from django.contrib.auth.models import User, Group
+from rest_framework.throttling import AnonRateThrottle
+from django.contrib.auth.models import User
 
-class RegisterView(APIView):
+from .serializers import (
+    UserRegistrationSerializer, UserLoginSerializer, UserProfileSerializer,
+    PasswordChangeSerializer, UserListSerializer, UserRoleUpdateSerializer, TokenSerializer
+)
+from .services import UserService, UserManagementService
+from complaints.permissions import IsAdminUser
+
+
+logger = logging.getLogger(__name__)
+
+
+class UserRegistrationView(APIView):
     """
-    Endpoint para registrar usuarios.
+    Register a new user.
+    Public endpoint with throttling to prevent abuse.
     """
     permission_classes = [AllowAny]
-
+    throttle_classes = [AnonRateThrottle]
+    serializer_class = UserRegistrationSerializer
+    
     def post(self, request):
-        username = request.data.get('username')
-        password = request.data.get('password')
-        email = request.data.get('email')
-
-        if not username or not password or not email:
-            return Response(
-                {'error': 'Faltan campos obligatorios: username, password y email.'}, 
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        if User.objects.filter(username=username).exists():
-            return Response({'error': 'El usuario ya existe.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        if User.objects.filter(email=email).exists():
-            return Response({'error': 'El correo electrónico ya está en uso.'}, status=status.HTTP_400_BAD_REQUEST)
-
+        """Register a new user."""
         try:
-            user = User.objects.create_user(username=username, password=password, email=email)
-            token = Token.objects.create(user=user)
-            return Response({'token': token.key}, status=status.HTTP_201_CREATED)
+            serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            
+            user, token = UserService.create_user(serializer.validated_data)
+            
+            response_serializer = TokenSerializer({
+                'token': token,
+                'user': user
+            })
+            
+            return Response({
+                'message': 'User registered successfully.',
+                'data': response_serializer.data
+            }, status=status.HTTP_201_CREATED)
+            
         except Exception as e:
-            return Response({'error': f'Error interno: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            logger.error(f"Registration error: {str(e)}")
+            return Response({
+                'error': 'Registration failed. Please try again.'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class LoginView(APIView):
     """
-    Endpoint para iniciar sesión.
+    User login endpoint.
+    Returns authentication token on successful login.
     """
     permission_classes = [AllowAny]
-
+    throttle_classes = [AnonRateThrottle]
+    serializer_class = UserLoginSerializer
+    
     def post(self, request):
-        from django.contrib.auth import authenticate
-
-        username = request.data.get('username')
-        password = request.data.get('password')
-
-        user = authenticate(username=username, password=password)
-        if user:
-            # Generar o obtener el token
-            token, _ = Token.objects.get_or_create(user=user)
+        """Authenticate user and return token."""
+        try:
+            serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
             
-            # Responder con el token en el cuerpo de la respuesta
-            return Response({'token': token.key}, status=status.HTTP_200_OK)
-        else:
-            # Si las credenciales son incorrectas
-            return Response({'error': 'Credenciales inválidas.'}, status=status.HTTP_401_UNAUTHORIZED)
+            username = serializer.validated_data['username']
+            password = serializer.validated_data['password']
+            
+            user, token = UserService.authenticate_user(username, password)
+            
+            if user and token:
+                response_serializer = TokenSerializer({
+                    'token': token,
+                    'user': user
+                })
+                
+                return Response({
+                    'message': 'Login successful.',
+                    'data': response_serializer.data
+                }, status=status.HTTP_200_OK)
+            else:
+                return Response({
+                    'error': 'Invalid credentials or account inactive.'
+                }, status=status.HTTP_401_UNAUTHORIZED)
+                
+        except Exception as e:
+            logger.error(f"Login error: {str(e)}")
+            return Response({
+                'error': 'Login failed. Please try again.'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class LogoutView(APIView):
     """
-    Endpoint para cerrar sesión.
+    User logout endpoint.
+    Invalidates the user's authentication token.
     """
+    permission_classes = [IsAuthenticated]
+    
     def post(self, request):
-        request.user.auth_token.delete()
-        return Response({'message': 'Cierre de sesión exitoso.'}, status=status.HTTP_200_OK)
-
-class UserListView(APIView):
-    """
-    Endpoint para listar usuarios y sus roles.
-    Solo accesible para administradores.
-    """
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        if not request.user.groups.filter(name='admin').exists():
-            return Response({'error': 'Permiso denegado. Solo para administradores.'}, status=403)
-        
-        users = User.objects.all().values('id', 'username', 'email', 'groups__name')
-        return Response({'users': list(users)}, status=status.HTTP_200_OK)
-
-
-class UpdateUserRoleView(APIView):
-    """
-    Endpoint para asignar roles a un usuario.
-    Solo accesible para administradores.
-    """
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request, user_id):
-        if not request.user.groups.filter(name='admin').exists():
-            return Response({'error': 'Permiso denegado. Solo para administradores.'}, status=403)
-        
-        role = request.data.get('role')
-        if role not in ['admin', 'agent']:
-            return Response({'error': 'Rol no válido.'}, status=status.HTTP_400_BAD_REQUEST)
-        
+        """Logout user by invalidating token."""
         try:
-            user = User.objects.get(id=user_id)
-            group = Group.objects.get(name=role)
-            user.groups.clear()
-            user.groups.add(group)
-            return Response({'message': f'Rol actualizado a {role} para el usuario {user.username}.'}, status=status.HTTP_200_OK)
-        except User.DoesNotExist:
-            return Response({'error': 'Usuario no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
-        except Group.DoesNotExist:
-            return Response({'error': 'Grupo no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+            success = UserService.logout_user(request.user)
+            
+            if success:
+                return Response({
+                    'message': 'Logout successful.'
+                }, status=status.HTTP_200_OK)
+            else:
+                return Response({
+                    'error': 'Logout failed.'
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                
+        except Exception as e:
+            logger.error(f"Logout error: {str(e)}")
+            return Response({
+                'error': 'Logout failed. Please try again.'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-class UserProfileView(APIView):
+
+class UserProfileView(generics.RetrieveUpdateAPIView):
     """
-    Endpoint para ver y editar el perfil del usuario autenticado.
+    Get and update user profile.
+    Users can only access their own profile.
+    """
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self):
+        """Return the current user."""
+        return self.request.user
+    
+    def perform_update(self, serializer):
+        """Update user profile using service layer."""
+        try:
+            user = UserService.update_user_profile(
+                self.request.user,
+                serializer.validated_data
+            )
+            serializer.instance = user
+            
+        except Exception as e:
+            logger.error(f"Profile update error: {str(e)}")
+            raise
+
+
+class PasswordChangeView(APIView):
+    """
+    Change user password.
+    Requires current password for security.
     """
     permission_classes = [IsAuthenticated]
+    serializer_class = PasswordChangeSerializer
+    
+    def post(self, request):
+        """Change user password."""
+        try:
+            serializer = self.serializer_class(
+                data=request.data,
+                context={'request': request}
+            )
+            serializer.is_valid(raise_exception=True)
+            
+            success = UserService.change_password(
+                request.user,
+                serializer.validated_data['new_password']
+            )
+            
+            if success:
+                return Response({
+                    'message': 'Password changed successfully. Please login again.'
+                }, status=status.HTTP_200_OK)
+            else:
+                return Response({
+                    'error': 'Password change failed.'
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                
+        except Exception as e:
+            logger.error(f"Password change error: {str(e)}")
+            return Response({
+                'error': 'Password change failed. Please try again.'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+class UserListView(generics.ListAPIView):
+    """
+    List all users (admin only).
+    Provides comprehensive user information for management.
+    """
+    serializer_class = UserListSerializer
+    permission_classes = [IsAuthenticated, IsAdminUser]
+    
+    def get_queryset(self):
+        """Get all users with related data."""
+        return UserManagementService.get_all_users()
+
+
+class UserRoleUpdateView(APIView):
+    """
+    Update user role (admin only).
+    Allows admins to assign roles to users.
+    """
+    permission_classes = [IsAuthenticated, IsAdminUser]
+    serializer_class = UserRoleUpdateSerializer
+    
+    def post(self, request, user_id):
+        """Update user role."""
+        try:
+            serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            
+            user = UserManagementService.update_user_role(
+                user_id,
+                serializer.validated_data['role']
+            )
+            
+            response_serializer = UserListSerializer(user)
+            return Response({
+                'message': f'Role updated successfully.',
+                'user': response_serializer.data
+            }, status=status.HTTP_200_OK)
+            
+        except User.DoesNotExist:
+            return Response({
+                'error': 'User not found.'
+            }, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            logger.error(f"Role update error: {str(e)}")
+            return Response({
+                'error': 'Role update failed.'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class UserActivationView(APIView):
+    """
+    Activate/deactivate user account (admin only).
+    """
+    permission_classes = [IsAuthenticated, IsAdminUser]
+    
+    def post(self, request, user_id):
+        """Activate user account."""
+        try:
+            user = UserManagementService.activate_user(user_id)
+            response_serializer = UserListSerializer(user)
+            
+            return Response({
+                'message': 'User activated successfully.',
+                'user': response_serializer.data
+            }, status=status.HTTP_200_OK)
+            
+        except User.DoesNotExist:
+            return Response({
+                'error': 'User not found.'
+            }, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            logger.error(f"User activation error: {str(e)}")
+            return Response({
+                'error': 'User activation failed.'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    def delete(self, request, user_id):
+        """Deactivate user account."""
+        try:
+            user = UserManagementService.deactivate_user(user_id)
+            response_serializer = UserListSerializer(user)
+            
+            return Response({
+                'message': 'User deactivated successfully.',
+                'user': response_serializer.data
+            }, status=status.HTTP_200_OK)
+            
+        except User.DoesNotExist:
+            return Response({
+                'error': 'User not found.'
+            }, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            logger.error(f"User deactivation error: {str(e)}")
+            return Response({
+                'error': 'User deactivation failed.'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class UserStatisticsView(APIView):
+    """
+    Get user statistics for admin dashboard.
+    """
+    permission_classes = [IsAuthenticated, IsAdminUser]
+    
     def get(self, request):
-        # Retorna la información del usuario autenticado
-        user = request.user
-        return Response({
-            "username": user.username,
-            "email": user.email,
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-        })
-
-    def put(self, request):
-        # Actualiza la información del usuario autenticado
-        user = request.user
-        data = request.data
-
-        user.first_name = data.get("first_name", user.first_name)
-        user.last_name = data.get("last_name", user.last_name)
-        user.email = data.get("email", user.email)
-
-        # Actualizar contraseña solo si se proporciona
-        password = data.get("password")
-        if password:
-            user.set_password(password)
-
-        user.save()
-        return Response({"message": "Perfil actualizado correctamente."}, status=status.HTTP_200_OK)
+        """Get user statistics."""
+        try:
+            statistics = UserManagementService.get_user_statistics()
+            
+            return Response({
+                'statistics': statistics
+            }, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            logger.error(f"User statistics error: {str(e)}")
+            return Response({
+                'error': 'Failed to retrieve user statistics.'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
