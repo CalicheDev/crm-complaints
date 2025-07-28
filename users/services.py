@@ -110,7 +110,8 @@ class UserService:
         """
         try:
             # Update allowed fields
-            allowed_fields = ['first_name', 'last_name', 'email']\n            for field in allowed_fields:
+            allowed_fields = ['first_name', 'last_name', 'email']
+            for field in allowed_fields:
                 if field in profile_data:
                     setattr(user, field, profile_data[field])
             

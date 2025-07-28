@@ -1,0 +1,34 @@
+INFO 2025-07-28 16:10:38,847 autoreload 35444 18332 Watching for file changes with StatReloader
+INFO 2025-07-28 16:11:26,588 autoreload 31564 18500 Watching for file changes with StatReloader
+INFO 2025-07-28 16:12:45,854 autoreload 31276 19716 Watching for file changes with StatReloader
+INFO 2025-07-28 16:15:49,063 autoreload 31276 19716 C:\xampp\htdocs\crm-complaints\users\services.py changed, reloading.
+INFO 2025-07-28 16:15:49,716 autoreload 40436 35236 Watching for file changes with StatReloader
+WARNING 2025-07-28 16:15:59,111 log 40436 36656 Not Found: /favicon.ico
+WARNING 2025-07-28 16:20:06,842 services 40436 25264 Failed authentication attempt for: admin
+WARNING 2025-07-28 16:20:06,842 log 40436 25264 Unauthorized: /api/auth/login/
+WARNING 2025-07-28 16:20:21,411 services 40436 25264 Failed authentication attempt for: admin
+WARNING 2025-07-28 16:20:21,411 log 40436 25264 Unauthorized: /api/auth/login/
+INFO 2025-07-28 16:20:26,671 autoreload 15676 21732 Watching for file changes with StatReloader
+WARNING 2025-07-28 16:22:56,224 services 40436 25264 Failed authentication attempt for: admin
+WARNING 2025-07-28 16:22:56,224 log 40436 25264 Unauthorized: /api/auth/login/
+WARNING 2025-07-28 16:27:19,494 services 40436 39772 Failed authentication attempt for: admin
+WARNING 2025-07-28 16:27:19,494 log 40436 39772 Unauthorized: /api/auth/login/
+WARNING 2025-07-28 16:27:50,548 services 40436 18076 Failed authentication attempt for: admin
+WARNING 2025-07-28 16:27:50,548 log 40436 18076 Unauthorized: /api/auth/login/
+WARNING 2025-07-28 16:28:20,533 services 40436 18076 Failed authentication attempt for: admin
+WARNING 2025-07-28 16:28:20,533 log 40436 18076 Unauthorized: /api/auth/login/
+WARNING 2025-07-28 16:28:35,730 services 40436 18076 Failed authentication attempt for: admin
+WARNING 2025-07-28 16:28:35,738 log 40436 18076 Unauthorized: /api/auth/login/
+INFO 2025-07-28 16:29:05,547 autoreload 24044 39464 Watching for file changes with StatReloader
+WARNING 2025-07-28 16:29:11,370 services 15676 21072 Failed authentication attempt for: admin
+WARNING 2025-07-28 16:29:11,370 log 15676 21072 Unauthorized: /api/auth/login/
+WARNING 2025-07-28 16:30:39,146 services 15676 21072 Failed authentication attempt for: admin
+WARNING 2025-07-28 16:30:39,146 log 15676 21072 Unauthorized: /api/auth/login/
+WARNING 2025-07-28 16:31:01,616 services 15676 21072 Failed authentication attempt for: admin
+WARNING 2025-07-28 16:31:01,616 log 15676 21072 Unauthorized: /api/auth/login/
+INFO 2025-07-28 16:33:09,252 autoreload 24044 39464 C:\xampp\htdocs\crm-complaints\backend\settings.py changed, reloading.
+INFO 2025-07-28 16:33:09,334 autoreload 15676 21732 C:\xampp\htdocs\crm-complaints\backend\settings.py changed, reloading.
+INFO 2025-07-28 16:33:10,142 autoreload 19024 31036 Watching for file changes with StatReloader
+INFO 2025-07-28 16:33:10,144 autoreload 40464 25268 Watching for file changes with StatReloader
+INFO 2025-07-28 16:34:52,014 services 19024 27196 User authenticated: admin
+INFO 2025-07-28 16:37:16,218 services 19024 8816 User authenticated: admin

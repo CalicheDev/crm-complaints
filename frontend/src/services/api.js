@@ -48,7 +48,13 @@ class ApiService {
   static async register(userData) {
     try {
       const response = await apiClient.post('/api/auth/register/', userData);
-      return response.data;
+      const responseData = response.data;
+      
+      // Store token and user data
+      localStorage.setItem('authToken', responseData.data.token);
+      localStorage.setItem('userData', JSON.stringify(responseData.data.user));
+      
+      return responseData;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -57,13 +63,13 @@ class ApiService {
   static async login(credentials) {
     try {
       const response = await apiClient.post('/api/auth/login/', credentials);
-      const { data } = response.data;
+      const responseData = response.data;
       
       // Store token and user data
-      localStorage.setItem('authToken', data.token);
-      localStorage.setItem('userData', JSON.stringify(data.user));
+      localStorage.setItem('authToken', responseData.data.token);
+      localStorage.setItem('userData', JSON.stringify(responseData.data.user));
       
-      return response.data;
+      return responseData;
     } catch (error) {
       throw this.handleError(error);
     }
