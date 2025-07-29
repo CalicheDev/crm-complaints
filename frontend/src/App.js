@@ -96,12 +96,8 @@ function App() {
               } 
             />
             
-            <Route 
-              path="/complaint-form" 
-              element={
-                <ComplaintForm />
-              } 
-            />
+            <Route path="/complaint-form" element={<ComplaintForm />} />
+            <Route path="/submit-complaint" element={<ComplaintForm />} />
             
             <Route 
               path="/my-complaints" 

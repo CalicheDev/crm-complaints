@@ -1,88 +1,210 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import ApiService from "../services/api";
+import LoadingSpinner from "./common/LoadingSpinner";
+import Alert from "./common/Alert";
 
 const Dashboard = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("access"); // Elimina el token de acceso
-    localStorage.removeItem("refresh"); // Si tienes un token de refresco
-    window.location.href = "/"; // Redirige al usuario al login
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const token = localStorage.getItem("access"); // Recupera el token desde localStorage
-      if (!token) {
-        alert("No tienes un token válido, por favor inicia sesión nuevamente.");
-        window.location.href = "/";
-        return;
-      }
-
+    const fetchDashboardData = async () => {
       try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000/api/complaints/dashboard/",
-          {
-            headers: {
-              Authorization: `Token ${token}`, // Asegúrate que este formato sea correcto en tu backend
-            },
-          }
-        );
-        setData(response.data);
-        setLoading(false);
+        setLoading(true);
+        setError(null);
+        const response = await ApiService.getDashboardAnalytics();
+        setData(response);
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
-        if (error.response && error.response.status === 401) {
-          alert("Token inválido o expirado. Por favor, inicia sesión de nuevo.");
-          handleLogout(); // Elimina el token y redirige al login
+        setError(error.message || "Failed to load dashboard data");
+        if (error.status === 401) {
+          handleLogout();
         }
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchData();
+    fetchDashboardData();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
+  if (error) {
+    return (
+      <Alert type="error" className="m-4">
+        {error}
+      </Alert>
+    );
+  }
+
+  if (!data) {
+    return (
+      <Alert type="warning" className="m-4">
+        No dashboard data available
+      </Alert>
+    );
+  }
 
   return (
-    <div className="dashboard">
-      <header className="dashboard-header">
-        <h1>Dashboard Analítico</h1>
-        <button
-          onClick={handleLogout}
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-        >
-          Logout
-        </button>
-      </header>
-      <div>
-        <h2>Total de Quejas</h2>
-        <p>{data.total_complaints}</p>
-      </div>
-      <div>
-        <h2>Quejas por Estado</h2>
-        <ul>
-          {data.complaints_by_status.map((status) => (
-            <li key={status.status}>
-              {status.status}: {status.count}
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div>
-        <h2>Tiempo Promedio de Resolución</h2>
-        <p>{(data.avg_resolution_time / 60).toFixed(2)} minutos</p>
-      </div>
-      <div>
-        <h2>Carga por Agente</h2>
-        <ul>
-          {data.agents_load.map((agent) => (
-            <li key={agent.assigned_to__username}>
-              {agent.assigned_to__username}: {agent.count}
-            </li>
-          ))}
-        </ul>
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <header className="mb-8">
+          <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-bold text-gray-900">Analytics Dashboard</h1>
+            <button
+              onClick={handleLogout}
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition-colors"
+            >
+              Logout
+            </button>
+          </div>
+        </header>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="p-5">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">T</span>
+                  </div>
+                </div>
+                <div className="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt className="text-sm font-medium text-gray-500 truncate">Total Complaints</dt>
+                    <dd className="text-3xl font-semibold text-gray-900">{data.total_complaints}</dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="p-5">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">A</span>
+                  </div>
+                </div>
+                <div className="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt className="text-sm font-medium text-gray-500 truncate">Avg Resolution Time</dt>
+                    <dd className="text-3xl font-semibold text-gray-900">
+                      {data.avg_resolution_time ? 
+                        `${Math.round(data.avg_resolution_time / 60)}m` : 
+                        'N/A'
+                      }
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="p-5">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">P</span>
+                  </div>
+                </div>
+                <div className="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt className="text-sm font-medium text-gray-500 truncate">Pending</dt>
+                    <dd className="text-3xl font-semibold text-gray-900">
+                      {data.complaints_by_status?.find(s => s.status === 'pending')?.count || 0}
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="p-5">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">R</span>
+                  </div>
+                </div>
+                <div className="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt className="text-sm font-medium text-gray-500 truncate">Resolved</dt>
+                    <dd className="text-3xl font-semibold text-gray-900">
+                      {data.complaints_by_status?.find(s => s.status === 'resolved')?.count || 0}
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="bg-white shadow rounded-lg">
+            <div className="px-4 py-5 sm:p-6">
+              <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                Complaints by Status
+              </h3>
+              <div className="space-y-3">
+                {data.complaints_by_status?.map((status) => (
+                  <div key={status.status} className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-500 capitalize">
+                      {status.status.replace('_', ' ')}
+                    </span>
+                    <span className="text-2xl font-semibold text-gray-900">
+                      {status.count}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white shadow rounded-lg">
+            <div className="px-4 py-5 sm:p-6">
+              <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                Agent Workload
+              </h3>
+              <div className="space-y-3">
+                {data.agents_load?.length > 0 ? (
+                  data.agents_load.map((agent) => (
+                    <div key={agent.assigned_to__username} className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-500">
+                        {agent.assigned_to__username}
+                      </span>
+                      <span className="text-2xl font-semibold text-gray-900">
+                        {agent.count}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-500 text-sm">No agent assignments yet</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

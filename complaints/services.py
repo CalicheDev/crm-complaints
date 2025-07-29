@@ -198,20 +198,17 @@ class DashboardService:
             )
         ).aggregate(avg_time=Avg('resolution_time'))
         
-        return result['avg_time'].total_seconds() if result['avg_time'] else None
+        avg_time = result.get('avg_time')
+        return avg_time.total_seconds() if avg_time else None
     
     @staticmethod
     def _get_agents_load() -> List[Dict[str, Any]]:
         """Get current workload for each agent."""
         return list(
             Complaint.objects.filter(assigned_to__groups__name='agent')
-            .values('assigned_to__username', 'assigned_to__first_name', 'assigned_to__last_name')
-            .annotate(
-                active_complaints=Count('id', filter=Q(status__in=['pending', 'in_progress'])),
-                total_complaints=Count('id'),
-                resolved_complaints=Count('id', filter=Q(status='resolved'))
-            )
-            .order_by('-active_complaints')
+            .values('assigned_to__username')
+            .annotate(count=Count('id'))
+            .order_by('-count')
         )
     
     @staticmethod
@@ -229,11 +226,11 @@ class DashboardService:
     @staticmethod
     def _get_monthly_trends() -> List[Dict[str, Any]]:
         """Get monthly complaint trends for the last 12 months."""
-        from django.db.models import DateTrunc
+        from django.db.models.functions import TruncMonth
         
         return list(
             Complaint.objects.annotate(
-                month=DateTrunc('month', 'created_at')
+                month=TruncMonth('created_at')
             ).values('month')
             .annotate(
                 total=Count('id'),

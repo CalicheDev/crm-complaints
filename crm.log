@@ -32,3 +32,75 @@ INFO 2025-07-28 16:33:10,142 autoreload 19024 31036 Watching for file changes wi
 INFO 2025-07-28 16:33:10,144 autoreload 40464 25268 Watching for file changes with StatReloader
 INFO 2025-07-28 16:34:52,014 services 19024 27196 User authenticated: admin
 INFO 2025-07-28 16:37:16,218 services 19024 8816 User authenticated: admin
+INFO 2025-07-29 08:21:00,406 autoreload 17864 29628 Watching for file changes with StatReloader
+ERROR 2025-07-29 08:24:34,021 services 17864 15784 Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:24:34,021 views 17864 15784 Error generating dashboard analytics: Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:24:34,024 log 17864 15784 Internal Server Error: /api/complaints/dashboard/
+ERROR 2025-07-29 08:24:34,083 services 17864 15784 Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:24:34,085 views 17864 15784 Error generating dashboard analytics: Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:24:34,089 log 17864 15784 Internal Server Error: /api/complaints/dashboard/
+INFO 2025-07-29 08:25:47,678 autoreload 2992 7260 Watching for file changes with StatReloader
+ERROR 2025-07-29 08:26:13,955 services 17864 5068 Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:26:13,955 views 17864 5068 Error generating dashboard analytics: Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:26:13,958 log 17864 5068 Internal Server Error: /api/complaints/dashboard/
+ERROR 2025-07-29 08:26:13,999 services 17864 5068 Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:26:14,001 views 17864 5068 Error generating dashboard analytics: Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:26:14,005 log 17864 5068 Internal Server Error: /api/complaints/dashboard/
+ERROR 2025-07-29 08:26:18,629 services 17864 5068 Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:26:18,631 views 17864 5068 Error generating dashboard analytics: Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:26:18,634 log 17864 5068 Internal Server Error: /api/complaints/dashboard/
+ERROR 2025-07-29 08:26:18,668 services 17864 5068 Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:26:18,668 views 17864 5068 Error generating dashboard analytics: Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:26:18,672 log 17864 5068 Internal Server Error: /api/complaints/dashboard/
+INFO 2025-07-29 08:27:26,579 services 17864 5068 Complaint created with ID: 1
+ERROR 2025-07-29 08:27:29,699 services 17864 5068 Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:27:29,699 views 17864 5068 Error generating dashboard analytics: Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:27:29,704 log 17864 5068 Internal Server Error: /api/complaints/dashboard/
+ERROR 2025-07-29 08:27:29,763 services 17864 5068 Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:27:29,765 views 17864 5068 Error generating dashboard analytics: Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:27:29,767 log 17864 5068 Internal Server Error: /api/complaints/dashboard/
+ERROR 2025-07-29 08:28:29,483 services 17864 5068 Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:28:29,489 views 17864 5068 Error generating dashboard analytics: Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:28:29,489 log 17864 5068 Internal Server Error: /api/complaints/dashboard/
+ERROR 2025-07-29 08:28:29,561 services 17864 5068 Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:28:29,563 views 17864 5068 Error generating dashboard analytics: Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:28:29,570 log 17864 5068 Internal Server Error: /api/complaints/dashboard/
+ERROR 2025-07-29 08:29:02,500 services 17864 5068 Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:29:02,500 views 17864 5068 Error generating dashboard analytics: Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:29:02,500 log 17864 5068 Internal Server Error: /api/complaints/dashboard/
+ERROR 2025-07-29 08:29:02,560 services 17864 5068 Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:29:02,560 views 17864 5068 Error generating dashboard analytics: Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:29:02,562 log 17864 5068 Internal Server Error: /api/complaints/dashboard/
+ERROR 2025-07-29 08:29:09,619 services 17864 5068 Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:29:09,619 views 17864 5068 Error generating dashboard analytics: Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:29:09,619 log 17864 5068 Internal Server Error: /api/complaints/dashboard/
+ERROR 2025-07-29 08:29:09,685 services 17864 5068 Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:29:09,690 views 17864 5068 Error generating dashboard analytics: Error generating dashboard analytics: cannot import name 'DateTrunc' from 'django.db.models' (C:\Users\Carlos Bejarano\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\django\db\models\__init__.py)
+ERROR 2025-07-29 08:29:09,692 log 17864 5068 Internal Server Error: /api/complaints/dashboard/
+INFO 2025-07-29 08:31:25,837 autoreload 2992 7260 C:\xampp\htdocs\crm-complaints\complaints\services.py changed, reloading.
+INFO 2025-07-29 08:31:25,917 autoreload 17864 29628 C:\xampp\htdocs\crm-complaints\complaints\services.py changed, reloading.
+INFO 2025-07-29 08:31:27,832 autoreload 23860 25540 Watching for file changes with StatReloader
+INFO 2025-07-29 08:31:27,879 autoreload 29292 8188 Watching for file changes with StatReloader
+INFO 2025-07-29 08:31:39,144 autoreload 23860 25540 C:\xampp\htdocs\crm-complaints\complaints\services.py changed, reloading.
+INFO 2025-07-29 08:31:39,265 autoreload 29292 8188 C:\xampp\htdocs\crm-complaints\complaints\services.py changed, reloading.
+INFO 2025-07-29 08:31:41,426 autoreload 18964 38228 Watching for file changes with StatReloader
+INFO 2025-07-29 08:31:41,552 autoreload 33004 37968 Watching for file changes with StatReloader
+INFO 2025-07-29 08:31:43,472 services 33004 12172 Dashboard analytics generated successfully
+INFO 2025-07-29 08:31:43,516 services 33004 12172 Dashboard analytics generated successfully
+INFO 2025-07-29 08:31:48,008 autoreload 33004 37968 C:\xampp\htdocs\crm-complaints\complaints\services.py changed, reloading.
+INFO 2025-07-29 08:31:48,832 autoreload 18964 38228 C:\xampp\htdocs\crm-complaints\complaints\services.py changed, reloading.
+INFO 2025-07-29 08:31:49,333 autoreload 30000 36752 Watching for file changes with StatReloader
+INFO 2025-07-29 08:31:50,231 autoreload 14528 23584 Watching for file changes with StatReloader
+INFO 2025-07-29 08:32:01,070 services 30000 40536 Dashboard analytics generated successfully
+INFO 2025-07-29 08:32:01,110 services 30000 40536 Dashboard analytics generated successfully
+INFO 2025-07-29 08:32:19,260 services 30000 16948 User authenticated: admin
+INFO 2025-07-29 08:32:29,586 services 30000 25196 Dashboard analytics generated successfully
+INFO 2025-07-29 08:32:45,044 services 30000 40536 Dashboard analytics generated successfully
+INFO 2025-07-29 08:32:45,097 services 30000 40536 Dashboard analytics generated successfully
+INFO 2025-07-29 08:33:18,068 services 30000 40536 Complaint 1 status updated to in_progress by admin
+INFO 2025-07-29 08:37:49,324 services 30000 13240 Dashboard analytics generated successfully
+INFO 2025-07-29 08:37:49,383 services 30000 13240 Dashboard analytics generated successfully
+ERROR 2025-07-29 08:38:25,823 views 30000 20404 Registration error: {'password': [ErrorDetail(string='This password is too short. It must contain at least 8 characters.', code='invalid'), ErrorDetail(string='This password is too common.', code='invalid')], 'password_confirm': [ErrorDetail(string='This field is required.', code='required')]}
+ERROR 2025-07-29 08:38:25,826 log 30000 20404 Internal Server Error: /api/auth/register/
+INFO 2025-07-29 08:38:36,265 services 30000 39264 New user created: test_agent
+INFO 2025-07-29 08:40:11,577 services 30000 22040 Role updated to agent for user: test_agent
