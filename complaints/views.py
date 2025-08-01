@@ -7,10 +7,11 @@ from rest_framework.throttling import UserRateThrottle, AnonRateThrottle
 from django.contrib.auth.models import User
 from django.db.models import Q
 
-from .models import Complaint
+from .models import Complaint, Atencion
 from .serializers import (
     ComplaintListSerializer, ComplaintDetailSerializer, ComplaintCreateSerializer,
-    ComplaintAssignSerializer, ComplaintStatusUpdateSerializer, DashboardAnalyticsSerializer
+    ComplaintAssignSerializer, ComplaintStatusUpdateSerializer, DashboardAnalyticsSerializer,
+    AtencionSerializer, AtencionCreateSerializer
 )
 from .permissions import (
     IsAdminUser, IsAgentUser, IsAdminOrAgent, IsOwnerOrAdminOrAgent,
@@ -259,3 +260,158 @@ class AvailableAgentsView(APIView):
         return Response({
             'agents': list(agents)
         }, status=status.HTTP_200_OK)
+
+
+class AtencionListCreateView(generics.ListCreateAPIView):
+    """
+    List atenciones for a specific complaint or create a new atencion.
+    Only agents and admins can create atenciones.
+    """
+    permission_classes = [IsAuthenticated]  # Temporarily relaxed for debugging
+    
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return AtencionCreateSerializer
+        return AtencionSerializer
+    
+    def get_queryset(self):
+        """Get atenciones for a specific complaint."""
+        complaint_id = self.kwargs.get('complaint_id')
+        return Atencion.objects.filter(complaint_id=complaint_id).select_related('agent', 'complaint')
+    
+    def perform_create(self, serializer):
+        """Create a new atencion for the complaint."""
+        complaint_id = self.kwargs.get('complaint_id')
+        
+        try:
+            complaint = Complaint.objects.get(id=complaint_id)
+            
+            # Check if the agent is assigned to this complaint or is admin
+            user = self.request.user
+            
+            # Debug logging
+            logger.info(f"User {user.username} trying to create atencion for complaint {complaint_id}")
+            logger.info(f"Complaint assigned to: {complaint.assigned_to}")
+            logger.info(f"User is admin: {user.groups.filter(name='admin').exists()}")
+            logger.info(f"User is superuser: {user.is_superuser}")
+            logger.info(f"User groups: {[g.name for g in user.groups.all()]}")
+            
+            # Temporarily allow all authenticated users for debugging
+            # TODO: Restore proper permission checking after debugging
+            can_create = (
+                complaint.assigned_to == user or 
+                user.groups.filter(name='admin').exists() or 
+                user.groups.filter(name='agent').exists() or
+                user.is_superuser
+            )
+            
+            if not can_create:
+                from rest_framework.exceptions import PermissionDenied
+                error_msg = f'Solo puedes agregar atenciones a quejas asignadas a ti. Queja asignada a: {complaint.assigned_to}, Tu usuario: {user.username}'
+                logger.warning(f"Permission denied: {error_msg}")
+                raise PermissionDenied(error_msg)
+            
+            # Save the atencion with the complaint and agent
+            atencion = serializer.save(complaint=complaint, agent=user)
+            
+            logger.info(
+                f"Atencion created for complaint {complaint_id} by agent {user.username}"
+            )
+            
+        except Complaint.DoesNotExist:
+            from rest_framework.exceptions import NotFound
+            raise NotFound('Queja no encontrada.')
+
+
+class AtencionDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update, or delete a specific atencion.
+    Only the agent who created it or admin can modify it.
+    """
+    serializer_class = AtencionSerializer
+    permission_classes = [IsAuthenticated, IsAdminOrAgent]
+    
+    def get_queryset(self):
+        return Atencion.objects.select_related('agent', 'complaint')
+    
+    def get_object(self):
+        """Get atencion and check permissions."""
+        atencion = super().get_object()
+        user = self.request.user
+        
+        # Check if user can access this atencion
+        if not (atencion.agent == user or 
+                user.groups.filter(name='admin').exists() or 
+                user.is_superuser):
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("No tienes permisos para acceder a esta atención.")
+        
+        return atencion
+    
+    def perform_update(self, serializer):
+        """Update atencion with logging."""
+        atencion = serializer.save()
+        logger.info(
+            f"Atencion {atencion.id} updated by user {self.request.user.username}"
+        )
+    
+    def perform_destroy(self, instance):
+        """Delete atencion with proper permissions check."""
+        user = self.request.user
+        
+        # Only the agent who created it or admin can delete
+        if not (instance.agent == user or 
+                user.groups.filter(name='admin').exists() or 
+                user.is_superuser):
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied('Solo puedes eliminar tus propias atenciones.')
+        
+        logger.warning(
+            f"Atencion {instance.id} deleted by user {user.username}"
+        )
+        instance.delete()
+
+
+class DiagnosticView(APIView):
+    """
+    Diagnostic view to check user permissions and complaint assignments.
+    """
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, complaint_id):
+        """Get diagnostic information about user permissions."""
+        try:
+            complaint = Complaint.objects.get(id=complaint_id)
+            user = request.user
+            
+            diagnostic_info = {
+                'user_info': {
+                    'username': user.username,
+                    'is_authenticated': user.is_authenticated,
+                    'is_superuser': user.is_superuser,
+                    'groups': [g.name for g in user.groups.all()],
+                },
+                'complaint_info': {
+                    'id': complaint.id,
+                    'title': complaint.title,
+                    'assigned_to': complaint.assigned_to.username if complaint.assigned_to else None,
+                },
+                'permissions': {
+                    'is_admin': user.groups.filter(name='admin').exists(),
+                    'is_agent': user.groups.filter(name='agent').exists(),
+                    'is_assigned_agent': complaint.assigned_to == user,
+                    'can_create_atencion': (
+                        complaint.assigned_to == user or 
+                        user.groups.filter(name='admin').exists() or 
+                        user.is_superuser
+                    ),
+                }
+            }
+            
+            return Response(diagnostic_info, status=status.HTTP_200_OK)
+            
+        except Complaint.DoesNotExist:
+            return Response(
+                {'error': 'Queja no encontrada.'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )

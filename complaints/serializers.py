@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Complaint
+from .models import Complaint, Atencion
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -30,11 +30,18 @@ class ComplaintDetailSerializer(serializers.ModelSerializer):
     """Serializer for detailed complaint view with all fields."""
     created_by = UserSerializer(read_only=True)
     assigned_to = UserSerializer(read_only=True)
+    atenciones = serializers.SerializerMethodField()
     
     class Meta:
         model = Complaint
         fields = '__all__'
         read_only_fields = ['id', 'created_at', 'updated_at', 'created_by']
+    
+    def get_atenciones(self, obj):
+        """Get atenciones for this complaint."""
+        from .serializers import AtencionSerializer
+        atenciones = obj.atenciones.all()
+        return AtencionSerializer(atenciones, many=True).data
     
     def validate_title(self, value):
         """Validate complaint title."""
@@ -132,3 +139,45 @@ class DashboardAnalyticsSerializer(serializers.Serializer):
     agents_load = serializers.ListField()
     recent_complaints = serializers.ListField()
     monthly_trends = serializers.ListField()
+
+
+class AtencionSerializer(serializers.ModelSerializer):
+    """Serializer for Atencion model."""
+    agent = UserSerializer(read_only=True)
+    
+    class Meta:
+        model = Atencion
+        fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'agent']
+    
+    def validate_observacion(self, value):
+        """Validate observacion field."""
+        if not value or len(value.strip()) < 10:
+            raise serializers.ValidationError(
+                "La observación debe tener al menos 10 caracteres."
+            )
+        if len(value) > 1000:
+            raise serializers.ValidationError(
+                "La observación no puede exceder 1000 caracteres."
+            )
+        return value.strip()
+
+
+class AtencionCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating new atenciones."""
+    
+    class Meta:
+        model = Atencion
+        fields = ['observacion', 'tipo_contacto', 'resultado']
+    
+    def validate_observacion(self, value):
+        """Validate observacion field."""
+        if not value or len(value.strip()) < 10:
+            raise serializers.ValidationError(
+                "La observación debe tener al menos 10 caracteres."
+            )
+        if len(value) > 1000:
+            raise serializers.ValidationError(
+                "La observación no puede exceder 1000 caracteres."
+            )
+        return value.strip()

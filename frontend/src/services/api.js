@@ -270,6 +270,54 @@ class ApiService {
     }
   }
 
+  // Atencion endpoints
+  static async getAtenciones(complaintId) {
+    try {
+      const response = await apiClient.get(`/api/complaints/${complaintId}/atenciones/`);
+      console.log('getAtenciones response:', response.data); // Debug logging
+      return response.data;
+    } catch (error) {
+      console.error('getAtenciones error:', error); // Debug logging
+      throw this.handleError(error);
+    }
+  }
+
+  static async createAtencion(complaintId, atencionData) {
+    try {
+      const response = await apiClient.post(`/api/complaints/${complaintId}/atenciones/`, atencionData);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  static async getAtencion(atencionId) {
+    try {
+      const response = await apiClient.get(`/api/complaints/atenciones/${atencionId}/`);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  static async updateAtencion(atencionId, atencionData) {
+    try {
+      const response = await apiClient.patch(`/api/complaints/atenciones/${atencionId}/`, atencionData);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  static async deleteAtencion(atencionId) {
+    try {
+      const response = await apiClient.delete(`/api/complaints/atenciones/${atencionId}/`);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
   // Utility methods
   static handleError(error) {
     const errorMessage = error.response?.data?.error || 

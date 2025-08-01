@@ -5,6 +5,7 @@ import ApiService from '../services/api';
 import LoadingSpinner from './common/LoadingSpinner';
 import Alert from './common/Alert';
 import Modal from './common/Modal';
+import AtencionManager from './AtencionManager';
 
 const ComplaintDetails = () => {
   const { id } = useParams();
@@ -279,6 +280,9 @@ const ComplaintDetails = () => {
           </div>
         </div>
       </div>
+
+      {/* Atenciones Section */}
+      <AtencionManager complaintId={id} refreshComplaint={fetchComplaint} />
 
       {/* Assign Agent Modal */}
       <Modal

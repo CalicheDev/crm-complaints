@@ -13,6 +13,8 @@ Un sistema moderno de gestión de quejas para CRM construido con Django REST Fra
 ### Para Agentes
 - Dashboard para gestionar quejas asignadas
 - Sistema de actualización de estado de quejas
+- **Gestión de Atenciones:** Registro detallado de contactos con pacientes/clientes
+- Seguimiento completo del proceso de resolución
 - Vista consolidada de todas las quejas activas
 
 ### Para Administradores
@@ -118,13 +120,15 @@ Después de ejecutar `setup_initial_data`:
 ```
 backend/
 ├── complaints/          # App principal de quejas
-│   ├── models.py       # Modelos de datos
-│   ├── views.py        # Vistas API
-│   ├── serializers.py  # Serialización de datos
+│   ├── models.py       # Modelos: Complaint, Atencion
+│   ├── views.py        # Vistas API con endpoints de atenciones
+│   ├── serializers.py  # Serialización de datos y atenciones
 │   ├── services.py     # Lógica de negocio
-│   ├── permissions.py  # Permisos personalizados
-│   └── exceptions.py   # Excepciones personalizadas
+│   ├── permissions.py  # Permisos personalizados basados en roles
+│   ├── exceptions.py   # Excepciones personalizadas
+│   └── admin.py        # Interfaz administrativa
 ├── users/              # App de gestión de usuarios
+│   └── management/     # Comandos personalizados
 └── backend/            # Configuración del proyecto
 ```
 
@@ -134,9 +138,11 @@ frontend/src/
 ├── components/
 │   ├── auth/           # Componentes de autenticación
 │   ├── common/         # Componentes reutilizables
+│   ├── AtencionManager.js # Gestión de atenciones por queja
+│   ├── ComplaintDetails.js # Vista detallada con atenciones
 │   └── Layout.js       # Layout principal
 ├── contexts/           # Context API (AuthContext)
-├── services/           # Servicios API
+├── services/           # Servicios API con endpoints de atenciones
 └── App.js             # Componente principal
 ```
 
@@ -159,6 +165,9 @@ frontend/src/
 ### Agente
 - Ver quejas asignadas
 - Actualizar estado de quejas
+- **Crear y gestionar atenciones:** Registro de contactos, observaciones y seguimientos
+- **Tracking completo:** Múltiples tipos de contacto (teléfono, email, presencial, chat)
+- **Resultados de atención:** Contactado, información adicional, seguimiento requerido, etc.
 - Gestionar quejas no asignadas
 
 ### Administrador
@@ -192,6 +201,30 @@ cd frontend
 npm run build
 ```
 
+## 🎯 Sistema de Atenciones (Nueva Funcionalidad)
+
+### Características Principales
+- **Registro Detallado:** Los agentes pueden agregar múltiples observaciones por queja
+- **Tipos de Contacto:** Teléfono, Email, Presencial, Chat, Otro
+- **Resultados de Atención:**
+  - Contactado exitosamente
+  - No se pudo contactar
+  - Se obtuvo información adicional
+  - Requiere seguimiento
+  - Resuelto en esta atención
+
+### Flujo de Trabajo
+1. **Asignación:** Administrador asigna queja a agente
+2. **Primera Atención:** Agente registra primer contacto con observaciones
+3. **Seguimientos:** Múltiples atenciones hasta resolución completa
+4. **Trazabilidad:** Historial completo de todas las interacciones
+5. **Cierre:** Proceso finaliza cuando se resuelve la queja
+
+### Base de Datos
+- **Tabla `atenciones`** relacionada con `complaints`
+- **Campos principales:** observacion, tipo_contacto, resultado, timestamps
+- **Relaciones:** ForeignKey a Complaint y User (agent)
+
 ## 📈 Funcionalidades del Dashboard
 
 - **Métricas en Tiempo Real:** Total de quejas, distribución por estado
@@ -199,6 +232,41 @@ npm run build
 - **Carga de Trabajo:** Quejas asignadas por agente
 - **Tendencias Mensuales:** Análisis de quejas durante 12 meses
 - **Estadísticas de Usuarios:** Distribución de roles y actividad
+
+## 📚 API Endpoints
+
+### Autenticación (`/api/auth/`)
+- `POST /register/` - Registro de usuario
+- `POST /login/` - Inicio de sesión
+- `POST /logout/` - Cierre de sesión
+- `GET /profile/` - Obtener perfil de usuario
+- `PATCH /profile/` - Actualizar perfil
+- `POST /profile/change-password/` - Cambiar contraseña
+
+### Quejas (`/api/complaints/`)
+- `GET /` - Listar quejas (filtradas por rol)
+- `POST /` - Crear nueva queja
+- `GET /{id}/` - Obtener detalles de queja
+- `PATCH /{id}/` - Actualizar queja
+- `DELETE /{id}/` - Eliminar queja (solo admin)
+- `POST /{id}/assign/` - Asignar agente (solo admin)
+- `PATCH /{id}/status/` - Actualizar estado
+- `GET /my/` - Quejas del usuario actual
+- `GET /agent/` - Quejas asignadas al agente
+- `GET /dashboard/` - Analíticas del dashboard (solo admin)
+
+### **🆕 Atenciones (`/api/complaints/`)**
+- `GET /{complaint_id}/atenciones/` - Listar atenciones de una queja
+- `POST /{complaint_id}/atenciones/` - Crear nueva atención
+- `GET /atenciones/{id}/` - Obtener atención específica
+- `PATCH /atenciones/{id}/` - Actualizar atención
+- `DELETE /atenciones/{id}/` - Eliminar atención
+
+### Gestión de Usuarios (Admin) (`/api/auth/users/`)
+- `GET /` - Listar usuarios
+- `POST /{id}/role/` - Actualizar rol de usuario
+- `POST|DELETE /{id}/activation/` - Activar/desactivar usuario
+- `GET /statistics/` - Estadísticas de usuarios
 
 ## 🧪 Testing
 
@@ -209,6 +277,69 @@ python manage.py test
 # Frontend tests
 cd frontend
 npm test
+
+# Comandos de utilidad para testing
+python manage.py check_user_roles
+python manage.py assign_test_complaint --complaint-id 1 --agent-username test_agent
+```
+
+## 🔧 Troubleshooting
+
+### Problemas Comunes
+
+#### Error: "You do not have permission to perform this action"
+```bash
+# Verificar roles del usuario
+python manage.py check_user_roles --username tu_usuario
+
+# Asignar queja a agente para testing
+python manage.py assign_test_complaint --complaint-id 1 --agent-username test_agent
+
+# Endpoint de diagnóstico (temporal)
+GET /api/complaints/{id}/diagnostic/
+```
+
+#### Error: "atenciones.map is not a function"
+- **Causa:** Respuesta de API no es un array
+- **Solución:** El frontend ahora maneja múltiples formatos de respuesta automáticamente
+- **Debug:** Revisar console.log en herramientas de desarrollador
+
+#### Error de Base de Datos
+```bash
+# Recrear migraciones si es necesario
+python manage.py makemigrations
+python manage.py migrate
+
+# Verificar conexión a MySQL
+python manage.py dbshell
+```
+
+#### Problemas de CORS en Desarrollo
+```python
+# En settings.py, verificar:
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+```
+
+#### Frontend no se conecta al Backend
+1. Verificar que el backend esté ejecutándose en puerto 8000
+2. Verificar `REACT_APP_API_URL` en variables de entorno del frontend
+3. Revisar Network tab en herramientas de desarrollador
+
+### Comandos de Diagnóstico
+```bash
+# Verificar estado del sistema
+python manage.py check
+python manage.py migrate --plan
+python manage.py showmigrations
+
+# Logs del servidor
+python manage.py runserver --verbosity=2
+
+# Crear usuario de prueba
+python manage.py createsuperuser
 ```
 
 ## 🤝 Contribuir

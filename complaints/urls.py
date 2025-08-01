@@ -2,7 +2,8 @@ from django.urls import path
 from .views import (
     ComplaintListCreateView, ComplaintDetailView, ComplaintAssignView,
     ComplaintStatusUpdateView, DashboardView, MyComplaintsView,
-    AgentComplaintsView, AvailableAgentsView
+    AgentComplaintsView, AvailableAgentsView, AtencionListCreateView,
+    AtencionDetailView, DiagnosticView
 )
 
 urlpatterns = [
@@ -21,4 +22,11 @@ urlpatterns = [
     # Admin endpoints
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
     path('agents/', AvailableAgentsView.as_view(), name='available-agents'),
+    
+    # Atencion endpoints
+    path('<int:complaint_id>/atenciones/', AtencionListCreateView.as_view(), name='atencion-list-create'),
+    path('atenciones/<int:pk>/', AtencionDetailView.as_view(), name='atencion-detail'),
+    
+    # Diagnostic endpoint (temporary)
+    path('<int:complaint_id>/diagnostic/', DiagnosticView.as_view(), name='diagnostic'),
 ]
