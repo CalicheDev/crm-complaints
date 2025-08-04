@@ -3,10 +3,13 @@ from .views import (
     ComplaintListCreateView, ComplaintDetailView, ComplaintAssignView,
     ComplaintStatusUpdateView, DashboardView, MyComplaintsView,
     AgentComplaintsView, AvailableAgentsView, AtencionListCreateView,
-    AtencionDetailView, DiagnosticView
+    AtencionDetailView, DiagnosticView, PublicPQRSCreateView
 )
 
 urlpatterns = [
+    # Public PQRS endpoint (anonymous)
+    path('public/pqrs/', PublicPQRSCreateView.as_view(), name='public-pqrs-create'),
+    
     # Core complaint endpoints
     path('', ComplaintListCreateView.as_view(), name='complaint-list-create'),
     path('<int:pk>/', ComplaintDetailView.as_view(), name='complaint-detail'),

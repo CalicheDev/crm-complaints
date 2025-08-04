@@ -1342,3 +1342,8 @@ INFO 2025-08-01 09:45:33,420 views 17840 40504 User is admin: True
 INFO 2025-08-01 09:45:33,420 views 17840 40504 User is superuser: True
 INFO 2025-08-01 09:45:33,420 views 17840 40504 User groups: ['admin']
 INFO 2025-08-01 09:45:33,432 views 17840 40504 Atencion created for complaint 2 by agent admin
+INFO 2025-08-04 17:12:28,786 autoreload 24324 22864 Watching for file changes with StatReloader
+INFO 2025-08-04 17:13:37,708 autoreload 24324 22864 C:\xampp\htdocs\crm-complaints\complaints\serializers.py changed, reloading.
+INFO 2025-08-04 17:13:39,174 autoreload 18356 4936 Watching for file changes with StatReloader
+INFO 2025-08-04 17:13:49,878 autoreload 18356 4936 C:\xampp\htdocs\crm-complaints\complaints\serializers.py changed, reloading.
+INFO 2025-08-04 17:13:50,951 autoreload 38976 8460 Watching for file changes with StatReloader

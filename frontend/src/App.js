@@ -13,6 +13,7 @@ import Dashboard from './components/Dashboard';
 import ComplaintForm from './components/ComplaintForm';
 import ComplaintList from './components/ComplaintList';
 import ComplaintDetails from './components/ComplaintDetails';
+import PublicPQRSForm from './components/PublicPQRSForm';
 
 // Error pages
 const NotFound = () => (
@@ -48,6 +49,7 @@ function App() {
             {/* Public routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/pqrs" element={<PublicPQRSForm />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
 
             {/* Protected routes */}
@@ -118,7 +120,7 @@ function App() {
             />
 
             {/* Default redirect */}
-            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="/" element={<Navigate to="/pqrs" replace />} />
             
             {/* 404 route */}
             <Route path="*" element={<NotFound />} />

@@ -7,12 +7,13 @@ from rest_framework.throttling import UserRateThrottle, AnonRateThrottle
 from django.contrib.auth.models import User
 from django.db.models import Q
 
-from .models import Complaint, Atencion
+from .models import Complaint, Atencion, ComplaintAttachment
 from .serializers import (
     ComplaintListSerializer, ComplaintDetailSerializer, ComplaintCreateSerializer,
     ComplaintAssignSerializer, ComplaintStatusUpdateSerializer, DashboardAnalyticsSerializer,
     AtencionSerializer, AtencionCreateSerializer
 )
+from .serializers_pqrs import PublicPQRSSerializer
 from .permissions import (
     IsAdminUser, IsAgentUser, IsAdminOrAgent, IsOwnerOrAdminOrAgent,
     CanAssignComplaint, CanViewDashboard
@@ -414,4 +415,87 @@ class DiagnosticView(APIView):
             return Response(
                 {'error': 'Queja no encontrada.'}, 
                 status=status.HTTP_404_NOT_FOUND
+            )
+
+
+class PublicPQRSCreateView(APIView):
+    """
+    Public endpoint for anonymous PQRS submission.
+    No authentication required.
+    """
+    permission_classes = [AllowAny]
+    throttle_classes = [AnonRateThrottle]
+    serializer_class = PublicPQRSSerializer
+    
+    def post(self, request):
+        """Create a public PQRS with file attachments."""
+        try:
+            serializer = self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            
+            # Create the complaint
+            complaint_data = serializer.validated_data
+            files = request.FILES.getlist('attachments', [])
+            
+            # Create complaint without user
+            complaint = Complaint.objects.create(
+                title=complaint_data['title'],
+                description=complaint_data['description'],
+                complaint_type=complaint_data['complaint_type'],
+                citizen_name=complaint_data['citizen_name'],
+                citizen_email=complaint_data.get('citizen_email'),
+                citizen_phone=complaint_data.get('citizen_phone'),
+                citizen_address=complaint_data.get('citizen_address'),
+                citizen_document=complaint_data.get('citizen_document'),
+                created_by=None  # Anonymous submission
+            )
+            
+            # Handle file attachments
+            for file in files:
+                if file.size > 10 * 1024 * 1024:  # 10MB limit
+                    complaint.delete()  # Rollback
+                    return Response(
+                        {'error': f'File {file.name} exceeds 10MB limit'}, 
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                
+                # Check file type
+                allowed_types = [
+                    'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+                    'application/pdf', 'application/msword',
+                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    'text/plain'
+                ]
+                
+                if file.content_type not in allowed_types:
+                    complaint.delete()  # Rollback
+                    return Response(
+                        {'error': f'File type {file.content_type} not allowed'}, 
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                
+                ComplaintAttachment.objects.create(
+                    complaint=complaint,
+                    file=file,
+                    original_filename=file.name,
+                    file_size=file.size,
+                    content_type=file.content_type
+                )
+            
+            logger.info(
+                f"Public PQRS created: {complaint.id} by {complaint.citizen_name} ({complaint.citizen_email})"
+            )
+            
+            return Response({
+                'message': 'PQRS enviado exitosamente. Se le asignará un asesor pronto.',
+                'complaint_id': complaint.id,
+                'complaint_type': complaint.complaint_type,
+                'title': complaint.title
+            }, status=status.HTTP_201_CREATED)
+            
+        except Exception as e:
+            logger.error(f"Error creating public PQRS: {str(e)}")
+            return Response(
+                {'error': 'Error interno del servidor. Intente nuevamente.'}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

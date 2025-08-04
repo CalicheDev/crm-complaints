@@ -1,10 +1,30 @@
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
+import os
+
+def complaint_file_upload_path(instance, filename):
+    return f'complaints/{instance.id}/{filename}'
 
 class Complaint(models.Model):
+    COMPLAINT_TYPES = [
+        ('peticion', 'Petición'),
+        ('queja', 'Queja'),
+        ('reclamo', 'Reclamo'),
+        ('sugerencia', 'Sugerencia'),
+    ]
+    
     title = models.CharField(max_length=255)
     description = models.TextField()
+    complaint_type = models.CharField(max_length=20, choices=COMPLAINT_TYPES, default='queja')
+    
+    # Información del ciudadano (para PQRS anónimas)
+    citizen_name = models.CharField(max_length=200, null=True, blank=True)
+    citizen_email = models.EmailField(null=True, blank=True)
+    citizen_phone = models.CharField(max_length=20, null=True, blank=True)
+    citizen_address = models.TextField(null=True, blank=True)
+    citizen_document = models.CharField(max_length=50, null=True, blank=True)
+    
     status = models.CharField(max_length=50, choices=[
         ('pending', 'Pending'),
         ('in_progress', 'In Progress'),
@@ -14,7 +34,7 @@ class Complaint(models.Model):
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
-        null=True,  # Permitir valores nulos
+        null=True,  # Permitir valores nulos para PQRS anónimas
         blank=True  # Opcional en formularios
     )
     created_at = models.DateTimeField(auto_now_add=True)
@@ -22,6 +42,26 @@ class Complaint(models.Model):
 
     def __str__(self):
         return self.title
+    
+    @property
+    def is_anonymous(self):
+        return self.created_by is None
+
+
+class ComplaintAttachment(models.Model):
+    complaint = models.ForeignKey(Complaint, on_delete=models.CASCADE, related_name='attachments')
+    file = models.FileField(upload_to=complaint_file_upload_path)
+    original_filename = models.CharField(max_length=255)
+    file_size = models.PositiveIntegerField()
+    content_type = models.CharField(max_length=100)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.complaint.title} - {self.original_filename}"
+    
+    @property
+    def file_size_mb(self):
+        return round(self.file_size / (1024 * 1024), 2)
 
 
 class Atencion(models.Model):

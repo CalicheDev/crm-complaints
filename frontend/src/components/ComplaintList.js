@@ -133,7 +133,10 @@ const ComplaintList = ({ userComplaints = false, agentComplaints = false }) => {
                         </p>
                         <div className="mt-2 flex items-center text-sm text-gray-500">
                           <span className="truncate">
-                            Created by: {complaint.created_by?.username || 'Anonymous'}
+                            {complaint.created_by 
+                              ? `Created by: ${complaint.created_by.username}`
+                              : `PQRS: ${complaint.citizen_name || 'Anonymous'} (${complaint.complaint_type || 'Queja'})`
+                            }
                           </span>
                           {complaint.assigned_to && (
                             <>

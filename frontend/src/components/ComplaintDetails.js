@@ -230,11 +230,100 @@ const ComplaintDetails = () => {
               <p className="text-gray-700 whitespace-pre-wrap">{complaint.description}</p>
             </div>
 
+            {/* PQRS Information for anonymous complaints */}
+            {!complaint.created_by && (
+              <div className="border-t pt-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Información del Ciudadano (PQRS)</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900 mb-1">Tipo de PQRS</h4>
+                    <p className="text-sm text-gray-600 capitalize">
+                      {complaint.complaint_type || 'Queja'}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900 mb-1">Nombre</h4>
+                    <p className="text-sm text-gray-600">
+                      {complaint.citizen_name || 'No proporcionado'}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900 mb-1">Email</h4>
+                    <p className="text-sm text-gray-600">
+                      {complaint.citizen_email || 'No proporcionado'}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900 mb-1">Teléfono</h4>
+                    <p className="text-sm text-gray-600">
+                      {complaint.citizen_phone || 'No proporcionado'}
+                    </p>
+                  </div>
+                  {complaint.citizen_document && (
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-900 mb-1">Documento</h4>
+                      <p className="text-sm text-gray-600">{complaint.citizen_document}</p>
+                    </div>
+                  )}
+                  {complaint.citizen_address && (
+                    <div className="md:col-span-2">
+                      <h4 className="text-sm font-medium text-gray-900 mb-1">Dirección</h4>
+                      <p className="text-sm text-gray-600">{complaint.citizen_address}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Attachments */}
+            {complaint.attachments && complaint.attachments.length > 0 && (
+              <div className="border-t pt-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Documentos adjuntos</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {complaint.attachments.map((attachment) => (
+                    <div key={attachment.id} className="border rounded-lg p-4 hover:bg-gray-50">
+                      <div className="flex items-center space-x-3">
+                        <div className="flex-shrink-0">
+                          <svg className="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                          </svg>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {attachment.original_filename}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {attachment.file_size_mb} MB • {attachment.content_type}
+                          </p>
+                          <p className="text-xs text-gray-400">
+                            {new Date(attachment.uploaded_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="mt-3">
+                        <a
+                          href={`http://localhost:8000${attachment.file}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-blue-600 bg-blue-100 hover:bg-blue-200"
+                        >
+                          <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                          </svg>
+                          Descargar
+                        </a>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <h4 className="text-sm font-medium text-gray-900 mb-2">Created By</h4>
                 <p className="text-sm text-gray-600">
-                  {complaint.created_by?.username || 'Anonymous'}
+                  {complaint.created_by?.username || 'Anonymous PQRS'}
                   {complaint.created_by?.first_name && (
                     <span className="ml-2">
                       ({complaint.created_by.first_name} {complaint.created_by.last_name})

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Complaint, Atencion
+from .models import Complaint, Atencion, ComplaintAttachment
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -31,6 +31,7 @@ class ComplaintDetailSerializer(serializers.ModelSerializer):
     created_by = UserSerializer(read_only=True)
     assigned_to = UserSerializer(read_only=True)
     atenciones = serializers.SerializerMethodField()
+    attachments = serializers.SerializerMethodField()
     
     class Meta:
         model = Complaint
@@ -42,6 +43,12 @@ class ComplaintDetailSerializer(serializers.ModelSerializer):
         from .serializers import AtencionSerializer
         atenciones = obj.atenciones.all()
         return AtencionSerializer(atenciones, many=True).data
+    
+    def get_attachments(self, obj):
+        """Get attachments for this complaint."""
+        from .serializers_pqrs import ComplaintAttachmentSerializer
+        attachments = obj.attachments.all()
+        return ComplaintAttachmentSerializer(attachments, many=True).data
     
     def validate_title(self, value):
         """Validate complaint title."""

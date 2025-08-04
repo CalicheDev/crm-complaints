@@ -102,6 +102,12 @@ const Layout = ({ children }) => {
               ) : (
                 <div className="flex items-center space-x-4">
                   <Link
+                    to="/pqrs"
+                    className="text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors duration-200"
+                  >
+                    Formulario PQRS
+                  </Link>
+                  <Link
                     to="/login"
                     className="text-gray-500 hover:text-gray-700 text-sm font-medium transition-colors duration-200"
                   >
