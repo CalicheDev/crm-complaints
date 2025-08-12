@@ -30,6 +30,7 @@ const Layout = ({ children }) => {
     { path: '/complaints', label: 'Complaints', roles: ['admin', 'agent', 'user'] },
     { path: '/my-complaints', label: 'My Complaints', roles: ['user'] },
     { path: '/agent-complaints', label: 'Assigned', roles: ['agent'] },
+    { path: '/omnichannel', label: 'Omnichannel', roles: ['admin', 'agent'] },
     { path: '/users', label: 'User Management', roles: ['admin'] },
     { path: '/profile', label: 'Profile', roles: ['admin', 'agent', 'user'] },
   ];

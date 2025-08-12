@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'complaints',
     'users',
+    'omnichannel',
 ]
 
 REST_FRAMEWORK = {

@@ -1347,3 +1347,62 @@ INFO 2025-08-04 17:13:37,708 autoreload 24324 22864 C:\xampp\htdocs\crm-complain
 INFO 2025-08-04 17:13:39,174 autoreload 18356 4936 Watching for file changes with StatReloader
 INFO 2025-08-04 17:13:49,878 autoreload 18356 4936 C:\xampp\htdocs\crm-complaints\complaints\serializers.py changed, reloading.
 INFO 2025-08-04 17:13:50,951 autoreload 38976 8460 Watching for file changes with StatReloader
+ERROR 2025-08-04 17:15:28,093 views 38976 32224 Error creating public PQRS: {'description': [ErrorDetail(string='Ensure this field has at least 10 characters.', code='min_length')]}
+ERROR 2025-08-04 17:15:28,096 log 38976 32224 Internal Server Error: /api/complaints/public/pqrs/
+ERROR 2025-08-04 17:15:44,231 views 38976 32224 Error creating public PQRS: {'description': [ErrorDetail(string='Ensure this field has at least 10 characters.', code='min_length')]}
+ERROR 2025-08-04 17:15:44,231 log 38976 32224 Internal Server Error: /api/complaints/public/pqrs/
+ERROR 2025-08-04 17:15:45,274 views 38976 32224 Error creating public PQRS: {'description': [ErrorDetail(string='Ensure this field has at least 10 characters.', code='min_length')]}
+ERROR 2025-08-04 17:15:45,274 log 38976 32224 Internal Server Error: /api/complaints/public/pqrs/
+ERROR 2025-08-04 17:15:46,051 views 38976 32224 Error creating public PQRS: {'description': [ErrorDetail(string='Ensure this field has at least 10 characters.', code='min_length')]}
+ERROR 2025-08-04 17:15:46,053 log 38976 32224 Internal Server Error: /api/complaints/public/pqrs/
+INFO 2025-08-04 18:58:41,667 autoreload 39140 39664 Watching for file changes with StatReloader
+INFO 2025-08-04 18:59:16,487 views 39140 15428 Public PQRS created: 3 by csacas (sccasasc@gamil.com)
+INFO 2025-08-04 18:59:21,502 services 39140 15136 Dashboard analytics generated successfully
+INFO 2025-08-04 18:59:21,520 services 39140 15136 Dashboard analytics generated successfully
+WARNING 2025-08-04 18:59:33,877 log 39140 22524 Not Found: /favicon.ico
+INFO 2025-08-04 18:59:47,211 views 39140 37020 User admin trying to create atencion for complaint 3
+INFO 2025-08-04 18:59:47,211 views 39140 37020 Complaint assigned to: None
+INFO 2025-08-04 18:59:47,211 views 39140 37020 User is admin: True
+INFO 2025-08-04 18:59:47,211 views 39140 37020 User is superuser: True
+INFO 2025-08-04 18:59:47,219 views 39140 37020 User groups: ['admin']
+INFO 2025-08-04 18:59:47,240 views 39140 37020 Atencion created for complaint 3 by agent admin
+WARNING 2025-08-04 18:59:57,400 log 39140 18716 Bad Request: /api/complaints/3/atenciones/
+WARNING 2025-08-04 19:00:00,831 log 39140 18716 Bad Request: /api/complaints/3/atenciones/
+WARNING 2025-08-04 19:00:05,635 log 39140 18716 Bad Request: /api/complaints/3/atenciones/
+WARNING 2025-08-04 19:00:10,855 log 39140 18716 Bad Request: /api/complaints/3/atenciones/
+WARNING 2025-08-04 19:00:12,815 log 39140 18716 Bad Request: /api/complaints/3/atenciones/
+INFO 2025-08-04 19:00:25,315 services 39140 18716 Agent test_agent assigned to complaint 3
+INFO 2025-08-04 19:00:32,947 views 39140 18716 User admin trying to create atencion for complaint 3
+INFO 2025-08-04 19:00:32,949 views 39140 18716 Complaint assigned to: test_agent
+INFO 2025-08-04 19:00:32,951 views 39140 18716 User is admin: True
+INFO 2025-08-04 19:00:32,952 views 39140 18716 User is superuser: True
+INFO 2025-08-04 19:00:32,953 views 39140 18716 User groups: ['admin']
+INFO 2025-08-04 19:00:32,977 views 39140 18716 Atencion created for complaint 3 by agent admin
+INFO 2025-08-04 19:00:38,885 views 39140 12436 User admin trying to create atencion for complaint 3
+INFO 2025-08-04 19:00:38,886 views 39140 12436 Complaint assigned to: test_agent
+INFO 2025-08-04 19:00:38,888 views 39140 12436 User is admin: True
+INFO 2025-08-04 19:00:38,888 views 39140 12436 User is superuser: True
+INFO 2025-08-04 19:00:38,890 views 39140 12436 User groups: ['admin']
+INFO 2025-08-04 19:00:38,905 views 39140 12436 Atencion created for complaint 3 by agent admin
+WARNING 2025-08-04 19:01:07,540 views 39140 18716 Atencion 6 deleted by user admin
+INFO 2025-08-04 19:01:12,284 services 39140 12436 Dashboard analytics generated successfully
+INFO 2025-08-04 19:01:12,298 services 39140 12436 Dashboard analytics generated successfully
+INFO 2025-08-04 19:01:22,829 services 39140 18716 Complaint 3 status updated to resolved by admin
+INFO 2025-08-04 19:01:27,728 services 39140 18716 Dashboard analytics generated successfully
+INFO 2025-08-04 19:01:27,751 services 39140 18716 Dashboard analytics generated successfully
+INFO 2025-08-04 19:01:52,337 services 39140 18716 Dashboard analytics generated successfully
+INFO 2025-08-04 19:01:52,355 services 39140 18716 Dashboard analytics generated successfully
+INFO 2025-08-04 19:01:55,525 services 39140 18716 User logged out: admin
+INFO 2025-08-11 14:48:24,811 autoreload 9432 16964 Watching for file changes with StatReloader
+INFO 2025-08-11 16:01:42,496 autoreload 25172 3248 Watching for file changes with StatReloader
+INFO 2025-08-11 16:02:44,934 services 25172 23568 User authenticated: admin
+INFO 2025-08-11 16:02:45,020 services 25172 23568 Dashboard analytics generated successfully
+INFO 2025-08-11 16:02:45,040 services 25172 23568 Dashboard analytics generated successfully
+INFO 2025-08-11 16:02:52,441 services 25172 23568 Dashboard analytics generated successfully
+INFO 2025-08-11 16:02:52,456 services 25172 23568 Dashboard analytics generated successfully
+INFO 2025-08-11 16:04:38,859 services 25172 23568 Dashboard analytics generated successfully
+INFO 2025-08-11 16:04:38,879 services 25172 23568 Dashboard analytics generated successfully
+INFO 2025-08-11 16:04:45,554 services 25172 23568 Dashboard analytics generated successfully
+INFO 2025-08-11 16:04:45,577 services 25172 23568 Dashboard analytics generated successfully
+WARNING 2025-08-11 16:59:37,621 log 25172 26588 Unauthorized: /api/omnichannel/channels/
+INFO 2025-08-11 22:14:11,734 autoreload 20312 27428 Watching for file changes with StatReloader

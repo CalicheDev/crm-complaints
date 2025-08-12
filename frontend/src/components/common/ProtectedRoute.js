@@ -3,7 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import LoadingSpinner from './LoadingSpinner';
 
-const ProtectedRoute = ({ children, requiredRole = null, adminOnly = false, agentOnly = false }) => {
+const ProtectedRoute = ({ children, requiredRole = null, adminOnly = false, agentOnly = false, adminOrAgent = false }) => {
   const { isAuthenticated, loading, user, hasRole } = useAuth();
   const location = useLocation();
 
@@ -27,6 +27,10 @@ const ProtectedRoute = ({ children, requiredRole = null, adminOnly = false, agen
   }
 
   if (agentOnly && !hasRole('agent')) {
+    return <Navigate to="/unauthorized" replace />;
+  }
+
+  if (adminOrAgent && !(hasRole('admin') || hasRole('agent'))) {
     return <Navigate to="/unauthorized" replace />;
   }
 

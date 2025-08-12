@@ -14,6 +14,7 @@ import ComplaintForm from './components/ComplaintForm';
 import ComplaintList from './components/ComplaintList';
 import ComplaintDetails from './components/ComplaintDetails';
 import PublicPQRSForm from './components/PublicPQRSForm';
+import OmnichannelPanel from './components/omnichannel/OmnichannelPanel';
 
 // Error pages
 const NotFound = () => (
@@ -115,6 +116,15 @@ function App() {
               element={
                 <ProtectedRoute agentOnly>
                   <ComplaintList agentComplaints />
+                </ProtectedRoute>
+              } 
+            />
+
+            <Route 
+              path="/omnichannel" 
+              element={
+                <ProtectedRoute>
+                  <OmnichannelPanel />
                 </ProtectedRoute>
               } 
             />

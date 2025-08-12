@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', include('users.urls')),  # Rutas de autenticación
     path('api/complaints/', include('complaints.urls')), # Rutas de quejas
+    path('api/omnichannel/', include('omnichannel.urls')), # Rutas omnicanal
 ]
 
 # Serve media files during development
